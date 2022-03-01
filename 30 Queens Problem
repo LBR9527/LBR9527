@@ -1,0 +1,248 @@
+m = 120; % number of population
+n = 30;  %  n queens
+g = zeros(m,n+1);
+
+
+% Initialization m*n matrix
+Population = zeros(m,n);
+for k = 1:m
+Population(k,:) = randperm(n); 
+end
+
+
+%% Evolution Algorithm
+for loop = 1
+
+    
+% Randomly choose 5 out of whole population
+Parents = zeros(5,n);
+x = randperm(m);
+y = x(1:5);
+for k = 1:5
+Parents(k,:) = Population(y(k),:); 
+end
+
+
+% sorting (1)get parents
+c = zeros(5,n+1);
+for k = 1:5
+f=0;
+z = Parents(k,:);
+
+  for x = 1:n-1
+    for y = x+1:n
+    if abs(abs(z(x)-z(y))-abs(x-y)) == 0 
+    f= f + 1;
+    end
+    end
+  end
+
+c(k,:)=[Parents(k,:),f];
+end
+
+d = sortrows(c,n+1);
+Parents = d(1:2,1:n);
+
+
+%crossover
+x = randi(n-1);     %crossover point
+spring=zeros(2,n);
+spring(1,:) = [Parents(1,1:x),zeros(1,n-x)];
+spring(2,:) = [Parents(2,1:x),zeros(1,n-x)];
+
+
+a = 1;
+b = 1;
+for j = 1:n-x
+
+  if x+a <= n  
+    
+  for k = a:n-x 
+  nu = 0;
+  
+     for l = 1:x   
+         
+     if spring(1,l) == Parents(2,x+k)  
+        break
+     else  
+        nu = nu + 1;
+     end
+     
+     end
+     
+     if nu == x
+        spring(1,x+j) = Parents(2,x+k);
+        a = a+1; 
+        break
+     else
+        a = a+1;
+     end
+    
+  end
+  end
+   
+    
+  if spring(1,x+j) == 0
+      
+  if x+a > n
+        
+  for o = b:x 
+  nu = 0;
+  
+     for l = 1:x   
+         
+     if spring(1,l) == Parents(2,o)  
+        break
+     else  
+        nu = nu + 1;
+     end
+     
+     end
+     
+     if nu == x
+        spring(1,x+j) = Parents(2,o);
+        b = b+1; 
+        break
+     else
+        b = b+1;
+     end
+    
+   end    
+  
+  end
+  end  
+  
+end
+ 
+
+
+a = 1;
+b = 1;
+for j = 1:n-x
+
+  if x+a <= n  
+    
+  for k = a:n-x 
+  nu = 0;
+  
+     for l = 1:x   
+         
+     if spring(2,l) == Parents(1,x+k)  
+        break
+     else  
+        nu = nu + 1;
+     end
+     
+     end
+     
+     if nu == x
+        spring(2,x+j) = Parents(1,x+k);
+        a = a+1; 
+        break
+     else
+        a = a+1;
+     end
+    
+  end
+  end
+   
+    
+  if spring(2,x+j) == 0
+      
+  if x+a > n
+        
+  for o = b:x 
+  nu = 0;
+  
+     for l = 1:x   
+         
+     if spring(2,l) == Parents(1,o)  
+        break
+     else  
+        nu = nu + 1;
+     end
+     
+     end
+     
+     if nu == x
+        spring(2,x+j) = Parents(1,o);
+        b = b+1; 
+        break
+     else
+        b = b+1;
+     end
+    
+   end    
+  
+  end
+  end  
+  
+end
+
+
+% mutation
+p1 = rand(1);
+p2 = rand(1);
+
+if p1 < 0.8
+   q = randi(n);
+   r = randi(n);
+   temp1 = spring(1,q);
+   temp2 = spring(1,r);
+   spring(1,q) = temp2;
+   spring(1,r) = temp1;
+end
+
+if p2 < 0.8
+   q = randi(n);
+   r = randi(n);
+   temp1 = spring(2,q);
+   temp2 = spring(2,r);
+   spring(2,q) = temp2;
+   spring(2,r) = temp1;
+end
+
+
+% sorting (2)get new population
+c = [Population;spring];
+for k = 1:m+2
+f=0;
+z = c(k,:);
+  for x = 1:n-1
+    for y = x+1:n
+    if abs(abs(z(x)-z(y))-abs(x-y)) == 0 
+    f= f + 1;
+    end
+    end
+  end
+
+d(k,:)=[c(k,:),f];
+end
+
+d = sortrows(d,n+1);
+Population = d(1:m,1:n);
+
+end  %% end of Evolution Algorithm
+
+
+% fitness of final population
+Population
+
+for k = 1:m
+f=0;
+z = Population(k,:);
+  for x = 1:n-1
+    for y = x+1:n
+    if abs(abs(z(x)-z(y))-abs(x-y)) == 0 
+    f= f + 1;
+    end
+    end
+  end
+
+g(k,:)=[Population(k,:),f];
+end
+
+conflicts = g 
+
+
+
